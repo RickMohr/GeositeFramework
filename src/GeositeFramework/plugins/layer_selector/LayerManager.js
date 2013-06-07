@@ -173,6 +173,22 @@ define([
             }
 
             function onLayerSourceLoaded(url) {
+
+
+                // TODO - call this from a place where you can pass
+                // it a proper base url for comparison
+                //
+                //this is a hack. when this is called from
+                // the error, it only has access to the jqXHR.url url
+                // which is fully loaded with parameters. So, compare
+                // the initial string, like startswith() in python.
+                //
+                _.each(_urls, function (baseUrl) {
+                    if (url.substring(0, baseUrl.length) === baseUrl) {
+                        url = baseUrl;
+                    }
+                });
+
                 // Specified URL is loaded; remove it from the list
                 _urls = _.without(_urls, url);
                 if (_urls.length == 0) {
@@ -184,6 +200,7 @@ define([
             function onLayerSourceLoadError(jqXHR, textStatus, errorThrown) {
                 _app.error("", "AJAX request to load layer source failed: '" + (jqXHR.resultText || jqXHR)
                     + "' Status: '" + textStatus + "' Error: '" + errorThrown + "'");
+                onLayerSourceLoaded(jqXHR.url);
             }
 
             // ------------------------------------------------------------------------
