@@ -103,9 +103,9 @@ define(["jquery", "use!underscore"],
             }
 
             function loadFolder(folderName, success) {
-                return $.ajax({
-                    dataType: 'jsonp',
-                    url: _baseUrl + (folderName === "" ? "" : "/" + folderName) + '?f=json',
+                return $.jsonp({
+                    timeout: 5000,
+                    url: _baseUrl + (folderName === "" ? "" : "/" + folderName) + '?f=json&callback=?',
                     success: success,
                     error: _onLayerSourceLoadError
                 });
@@ -123,9 +123,9 @@ define(["jquery", "use!underscore"],
 
             function loadMapServerService(serviceSpec) {
                 var serviceUrl = _baseUrl + "/" + serviceSpec.name + "/MapServer";
-                return $.ajax({
-                    dataType: 'jsonp',
-                    url: serviceUrl + "?f=json",
+                return $.jsonp({
+                    timeout: 5000,
+                    url: serviceUrl + "?f=json&callback=?",
                     success: function (serviceData) {
                         // Service has loaded -- make its node and load its layers
                         var serviceName = getServiceName(serviceSpec.name);
@@ -250,9 +250,10 @@ define(["jquery", "use!underscore"],
             function fetchDescription(layerNode, callback) {
                 var serviceNode = getServiceNode(layerNode),
                     url = serviceNode.url + "/" + layerNode.layerId;
-                $.ajax({
-                    dataType: 'jsonp',
-                    url: url + "?f=json",
+                $.jsonp({
+                    // this will fail gracefully on timeout, except the ui keeps spinning
+                    timeout: 5000,
+                    url: url + "?f=json&callback=?",
                     success: function (metadata) {
                         layerNode.description = metadata.description;
                         layerNode.url = url;
