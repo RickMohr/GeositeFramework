@@ -120,8 +120,11 @@ define(["jquery", "use!underscore"],
 
             setupMeasureEvents = function () {
                 // Track clicks and hovers while the measure tool is active
-                _eventHandles.move =
-                    dojo.connect(options.map, "onMouseMove", handleMapMouseMove);
+                // _eventHandles.move =
+                //     dojo.connect(options.map, "onMouseMove", handleMapMouseMove);
+
+                // _eventHandles.move = 
+                    $(options.map.container).mousemove(function (e) { handleMapMouseMove(e); });
 
                 _eventHandles.doubleClick =
                     dojo.connect(options.map, "onDblClick", handleMapDoubleClick);
@@ -176,13 +179,22 @@ define(["jquery", "use!underscore"],
                 var path = _.last(_points, 1),
                     line = new esri.geometry.Polyline(),
                     geographicLine = null,
-                    tipText = '';
+                    tipText = '',
+                    mapPoint = evt.mapPoint || 
+                        esri.geometry.toMapGeometry(options.map.extent,
+                                                $(options.map.container).width(),
+                                                $(options.map.container).height(),
+                                                new esri.geometry.Point(evt.clientX - 85,
+                                                                        evt.clientY - 45,
+                                                                        options.map.spatialReference));
+                                                                       
 
-                path.push(evt.mapPoint);
+                path.push(mapPoint);
                 line.setSpatialReference(options.map.spatialReference);
                 line.addPath(path);
 
                 _hoverLine.setGeometry(line);
+
 
                 // Calculate the length of the line, using a geographic coordindate system
                 geographicLine = esri.geometry.webMercatorToGeographic(line);
