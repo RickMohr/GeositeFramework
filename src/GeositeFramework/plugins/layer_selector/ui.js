@@ -1,8 +1,8 @@
 ﻿// Module Ui.js
 
 require(["jquery.placeholder"]);
-define(["jquery", "use!underscore", "use!extjs", "./treeFilter"],
-    function ($, _, Ext, treeFilter, TINY) {
+define(["jquery", "use!underscore", "use!extjs"],
+    function ($, _, Ext) {
         //$('input, textarea').placeholder(); // initialize jquery.placeholder
 
         var Ui = function (container, map, templates) {
@@ -66,7 +66,7 @@ define(["jquery", "use!underscore", "use!extjs", "./treeFilter"],
             // ------------------------------------------------------------------------
             // Private methods
 
-            function deracinate(rootNode, depth) {
+            function deracinate(rootNode) {
                 /*
                   Takes a tree and checks to see if the root node only
                   has one child. If so, it promotes the child of the
