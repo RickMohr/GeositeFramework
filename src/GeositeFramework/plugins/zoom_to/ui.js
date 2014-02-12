@@ -6,9 +6,11 @@ define([],
         // TEMPLATES
         ////////////////////////////////
 
-        var inputTemplate = ['<input type="text" placeholder="Search by Address" value="<%= inputValue %>" />',
-                             '<div id="pluginZoomTo-clearSearch">&#10006;</div>',
-                             '<div id="pluginZoomTo-choices"></div>'
+        var inputTemplate = ['<div class="pluginZoomTo">',
+                               '<input type="text" placeholder="Search by Address" value="<%= inputValue %>" />',
+                               '<div id="pluginZoomTo-clearSearch">&#10006;</div>',
+                               '<div id="pluginZoomTo-choices"></div>',
+                             '</div>'
                              ].join(""),
             locationTemplate = '<a href="javascript:;"><%= address %></a>',
             searchErrorText = "There was an error completing your request.";
@@ -23,7 +25,6 @@ define([],
             defaults: {
                 // set by view, listened internally
                 inputValue: "",
-                hasMouse: false,
                 hasFocus: false,
 
                 // set internally, listened by view
@@ -52,21 +53,7 @@ define([],
                     model.abortGeocodeRequest();
 
                     if (model.get('inputValue') === "") {
-                        model.set('showingInput', false);
                         model.set('showingLocationBox', false);
-                    } else {
-                        model.set('showingInput', true);
-
-                    }
-                });
-
-                this.on("change:hasMouse change:hasFocus", function () {
-                    if (model.get('hasMouse') === true || 
-                        model.get('hasFocus') === true || 
-                        model.get('inputValue') !== "") {
-                        model.set('showingInput', true);
-                    } else {
-                        model.set('showingInput', false);
                     }
                 });
             },
@@ -135,7 +122,7 @@ define([],
 
         var UiInputView = Backbone.View.extend({
 
-            className: "pluginZoomTo",
+            //className: "pluginZoomTo",  // CSS class for div autocreated by this view
             
             // required for ALL click events
             _cancelEventBubble: function(event) {
@@ -163,11 +150,6 @@ define([],
                 "click input": function (e) {
                     this._cancelEventBubble(e);
                 },
-                "click": function(e) {
-                    this._cancelEventBubble(e);
-                },
-                "mouseenter": function () { this.model.set('hasMouse', true); },
-                "mouseleave": function () { this.model.set('hasMouse', false); },
                 "blur input": function () { this.model.set('hasFocus', false); },
                 "focus input": function () { this.model.set('hasFocus', true); },
                 "keypress input": function (event) { this.handleKeyPress(event); }
@@ -228,23 +210,21 @@ define([],
                 var view = this;
 
                 this.listenTo(this.model, "change:showingInput change:showingLocationBox", function () {
-                    if (view.model.get('showingInput') === true && view.model.get('showingLocationBox') === true) {
-                        view.$el.addClass("pluginZoomTo-showing-input");
-                        view.$el.addClass("pluginZoomTo-with-choices");
-                        view.$('#pluginZoomTo-choices').empty();
-                        view.$('#pluginZoomTo-choices').append(
-                            '<div class="pluginZoomTo-progressIndicator"></div>');
-                    } else if (view.model.get('showingInput') === true) {
-                        view.$el.addClass("pluginZoomTo-showing-input");
-                        view.$el.removeClass("pluginZoomTo-with-choices");
-                    } else if (view.model.get('showingInput') === true && view.model.get('showingLocationBox') === false) {
-                        // This is just a test embedded in the code.
-                        // TODO: move to unit tests or remove entirely
-                        console.log("Error. Can't show location box without input");
+                    var $root = view.$('.pluginZoomTo');
+                    if (view.model.get('showingInput') === true) {
+                        $root.addClass("pluginZoomTo-showing-input");
+                        if (view.model.get('showingLocationBox') === true) {
+                            $root.addClass("pluginZoomTo-with-choices");
+                            view.$('#pluginZoomTo-choices').empty();
+                            view.$('#pluginZoomTo-choices').append(
+                                '<div class="pluginZoomTo-progressIndicator"></div>');
+                        } else {
+                            $root.removeClass("pluginZoomTo-with-choices");
+                        }
                     } else {
                         view.$('input').val("");
-                        view.$el.removeClass("pluginZoomTo-showing-input");
-                        view.$el.removeClass("pluginZoomTo-with-choices");
+                        $root.removeClass("pluginZoomTo-showing-input");
+                        $root.removeClass("pluginZoomTo-with-choices");
                     }
                 });
 
@@ -261,7 +241,8 @@ define([],
                 var renderedTemplate = _.template(inputTemplate)(this.model.toJSON());
                 this.$el
                     .empty()
-                    .append(renderedTemplate);
+                    .css({ position: "relative", overflow: "visible" })
+                .append(renderedTemplate);
                 return this;
             },
 

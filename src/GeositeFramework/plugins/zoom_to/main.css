@@ -47,8 +47,15 @@
         box-shadow: 0 1px 7px rgba(0,0,0,.85);
     }
 
+.pluginZoomTo {
+    display: none;
+}
+
 .pluginZoomTo-showing-input {
-    width: 180px !important;
+    display: block;
+    position: absolute;
+    left: 40px;
+    width: 180px;
     opacity: 1 !important;
 }
 
@@ -56,25 +63,13 @@
     height: 254px !important;
 }
 
-.active .pluginZoomTo {
-    width: 180px !important;
-}
-
-.pluginZoomTo {}
-
 .pluginZoomTo-progressIndicator {
 	background-image: url(loading.gif) !important;
 }
 
 .pluginZoomTo input[type="text"] {
-    background-image: url(tools_search.png) !important;
-    background-repeat: no-repeat !important;
-    width: 178px !important;
-    border: none !important;
-    background-color: #FAFAFA !important;
-    outline-color: transparent !important;
-    background-position: 8px 8px !important;
-    padding-left: 36px !important;
+    width: 178px;
+    background-color: #FAFAFA;
     margin-bottom: 0 !important;
     }
     .pluginZoomTo input:focus {
@@ -82,6 +77,4 @@
     }
 
 .pluginZoomTo-expanded {
-    width: 180px !important;
-    opacity: 1 !important;
 }

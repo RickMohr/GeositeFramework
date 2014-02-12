@@ -54,10 +54,19 @@ define(
             },
 
             renderLauncher: function renderLauncher() {
-                if (!this.input) this._initializeViews();
+                if (!this.input)
+                    this._initializeViews();
                 return this.inputView.render().$el;
             },
-            
+
+            activate: function () {
+                this.input.set('showingInput', true);
+            },
+
+            deactivate: function () {
+                this.input.set('showingInput', false);
+            },
+
             hibernate: function() {
                 this.inputView.clear();
             }
