@@ -363,6 +363,43 @@
             return view;
         }
 
+        function createUiContainer(view, paneNumber) {
+            var containerId = view.model.name() + '-' + paneNumber,
+                bindings = {
+                    id: containerId
+                },
+                $uiContainer = $($.trim(N.app.templates['template-plugin-container'](bindings))),
+
+                calculatePosition = function ($el) {
+                    var pos = view.$el.position(),
+                        gutterWidth = 5,
+                        xEdgeWithBuffer = pos.left + $el.width() + gutterWidth;
+
+                    return {
+                        top: pos.top,
+                        left: xEdgeWithBuffer
+                    };
+                };
+
+            $uiContainer = $($.trim(N.app.templates['template-plugin-container'](bindings)));
+
+            $uiContainer
+                // Position the dialog next to the sidebar button which shows it.
+                .css(calculatePosition(view.$el))
+
+                // Listen for events to turn the plugin completely off
+                .find('.plugin-off').on('click', function() {
+                    view.model.turnOff();
+                }).end();
+
+            // Attach to top pane element
+            view.$el.parents('.content').append($uiContainer.hide());
+
+            // Tell the model about $uiContainer so it can pass it to the plugin object
+            view.model.set('$uiContainer', $uiContainer);
+            view.$uiContainer = $uiContainer;
+        }
+
         N.views = N.views || {};
         N.views.TopbarPlugin = N.views.BasePlugin.extend({
             className: 'topbar-plugin',
