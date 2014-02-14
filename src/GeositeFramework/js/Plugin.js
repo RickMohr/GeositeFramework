@@ -182,6 +182,58 @@
             });
         }
 
+        function createUiContainer(view, paneNumber) {
+            var containerId = view.model.name() + '-' + paneNumber,
+                bindings = {
+                    title: view.model.get("pluginObject").toolbarName,
+                    id: containerId
+                },
+                $uiContainer = $($.trim(N.app.templates['template-plugin-container'](bindings))),
+
+                calculatePosition = function ($el) {
+                    var pos = view.$el.position(),
+                        gutterWidth = 70,
+                        gutterHeight = -20,
+                        yCenter = $el.height() / 2 + gutterHeight,
+                        xEdgeWithBuffer = pos.left + $el.width() + gutterWidth;
+
+                    return {
+                        top: yCenter,
+                        left: xEdgeWithBuffer
+                    };
+                };
+
+            $uiContainer = $($.trim(N.app.templates['template-plugin-container'](bindings)));
+
+            $uiContainer
+                // Position the dialog next to the sidebar button which shows it.
+                .css(calculatePosition(view.$el))
+
+                // Listen for events to turn the plugin completely off
+                .find('.plugin-off').on('click', function () {
+                    view.model.turnOff();
+                }).end()
+
+                // Unselect the plugin, but keep active
+                .find('.plugin-close').on('click', function () {
+                    view.model.deselect();
+                });
+
+            // Attach to top pane element
+            view.$el.parents('.content').append($uiContainer.hide());
+
+            // Make the container resizable and moveable
+            new dojox.layout.ResizeHandle({
+                targetId: containerId
+            }).placeAt(containerId);
+
+            new dojo.dnd.Moveable($uiContainer[0]);
+
+            // Tell the model about $uiContainer so it can pass it to the plugin object
+            view.model.set('$uiContainer', $uiContainer);
+            view.$uiContainer = $uiContainer;
+        }
+
         N.views = N.views || {};
         N.views.BasePlugin = Backbone.View.extend({
             // If your plugin happens to have clickable elements
@@ -198,6 +250,8 @@
             },
 
             initialize: function () { initialize(this); },
+            
+            createUiContainer: function(paneNumber) { createUiContainer(this, paneNumber); },
 
             /*
                 Click handlers exposed so that they can be overridden by
@@ -223,7 +277,7 @@
         function initialize(view, $parent, paneNumber) {
             render(view);
             view.$el.appendTo($parent);
-            createUiContainer(view, paneNumber);
+            view.createUiContainer(paneNumber);
             createLegendContainer(view);
             N.views.BasePlugin.prototype.initialize.call(view);
         }
@@ -261,57 +315,6 @@
             return view;
         }
 
-        function createUiContainer(view, paneNumber) {
-            var containerId = view.model.name() + '-' + paneNumber,
-                bindings = {
-                    title: view.model.get("pluginObject").toolbarName,
-                    id: containerId
-                },
-                $uiContainer = $($.trim(N.app.templates['template-plugin-container'](bindings))),
-
-                calculatePosition = function ($el) {
-                    var pos = view.$el.position(),
-                        gutterWidth = 70,
-                        gutterHeight = -20,
-                        yCenter = $el.height() / 2 + gutterHeight,
-                        xEdgeWithBuffer = pos.left + $el.width() + gutterWidth;
-
-                    return {
-                        top: yCenter,
-                        left: xEdgeWithBuffer
-                    };
-                };
-
-                $uiContainer = $($.trim(N.app.templates['template-plugin-container'](bindings)));
-
-            $uiContainer
-                // Position the dialog next to the sidebar button which shows it.
-                .css(calculatePosition(view.$el))
-            
-                // Listen for events to turn the plugin completely off
-                .find('.plugin-off').on('click', function () {
-                    view.model.turnOff();
-                }).end()
-
-                // Unselect the plugin, but keep active
-                .find('.plugin-close').on('click', function () {
-                    view.model.deselect();
-                });
-
-            // Attach to top pane element
-            view.$el.parents('.content').append($uiContainer.hide());
-
-            // Make the container resizable and moveable
-            new dojox.layout.ResizeHandle({
-                targetId: containerId
-            }).placeAt(containerId);
-
-            new dojo.dnd.Moveable($uiContainer[0]);
-
-            // Tell the model about $uiContainer so it can pass it to the plugin object
-            view.model.set('$uiContainer', $uiContainer);
-            view.$uiContainer = $uiContainer;
-        }
 
         function createLegendContainer(view) {
             // Create container for custom legend and attach to legend element
