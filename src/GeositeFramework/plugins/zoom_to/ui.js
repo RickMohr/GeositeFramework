@@ -122,33 +122,9 @@ define([],
 
         var UiInputView = Backbone.View.extend({
 
-            //className: "pluginZoomTo",  // CSS class for div autocreated by this view
-            
-            // required for ALL click events
-            _cancelEventBubble: function(event) {
-                if (event.stopPropagation) {
-                    event.stopPropagation();
-                } else if (e.cancelBubble) {  // IE8
-                    event.cancelBubble = true;
-                }
-            },
-
             events: {
-                // Because this plugin renders some extra UI features into
-                // the <a> tag used as the plugin icon, click events do not
-                // behave quite as expected. For example, A click event on 
-                // the plugin will try to take focus, but the subsequent
-                // click event that registers on the <a> tag will rerender
-                // the dom elements and lose focus. Therefore, for this plugin
-                // and plugins that behave similarly, ALL click events must
-                // manually stop event propation up to the <a> tag.
-
                 "click #pluginZoomTo-clearSearch": function (e) {
                     this.clear();
-                    this._cancelEventBubble(e);
-                },
-                "click input": function (e) {
-                    this._cancelEventBubble(e);
                 },
                 "blur input": function () { this.model.set('hasFocus', false); },
                 "focus input": function () { this.model.set('hasFocus', true); },
@@ -208,8 +184,9 @@ define([],
 
             initialize: function () {
                 var view = this;
+                view.render();
 
-                this.listenTo(this.model, "change:showingInput change:showingLocationBox", function () {
+                view.listenTo(this.model, "change:showingInput change:showingLocationBox", function () {
                     var $root = view.$('.pluginZoomTo');
                     if (view.model.get('showingInput') === true) {
                         $root.addClass("pluginZoomTo-showing-input");
@@ -228,7 +205,7 @@ define([],
                     }
                 });
 
-                this.listenTo(this.model, "change:addressCandidates change:addressError", function () {
+                view.listenTo(this.model, "change:addressCandidates change:addressError", function () {
                     if (view.model.get('addressError') === true) {
                         view.renderLocationBox(searchErrorText);
                     } else if (view.model.get('addressCandidates') !== []) {
@@ -241,9 +218,8 @@ define([],
                 var renderedTemplate = _.template(inputTemplate)(this.model.toJSON());
                 this.$el
                     .empty()
-                    .css({ position: "relative", overflow: "visible" })
-                .append(renderedTemplate);
-                return this;
+                    .append(renderedTemplate)
+                    .show();
             },
 
             clear: function() {

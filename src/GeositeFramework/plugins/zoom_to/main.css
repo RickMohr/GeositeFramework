@@ -1,4 +1,8 @@
-﻿#pluginZoomTo-choices {
+﻿.pluginZoomTo-icon {		
+	  background-image: url(tools_search.png);
+   }
+
+#pluginZoomTo-choices {
     width: 178px !important;
     height: 220px !important;
     overflow: auto !important;
@@ -24,7 +28,7 @@
 #pluginZoomTo-clearSearch {
     display: none;
 }
-.pluginZoomTo-showing-input #pluginZoomTo-clearSearch {
+.pluginZoomTo-with-choices #pluginZoomTo-clearSearch {
     display: block;
     position: absolute;
     bottom: -12px;
@@ -40,6 +44,7 @@
     box-shadow: 0 1px 7px #222;
     box-shadow: 0 1px 7px rgba(0,0,0,.5);
     z-index: 99;
+    cursor: pointer;
     }
     .pluginZoomTo-showing-input #pluginZoomTo-clearSearch:hover {
         background: #BE1E2D;
@@ -53,10 +58,6 @@
 
 .pluginZoomTo-showing-input {
     display: block;
-    position: absolute;
-    left: 40px;
-    width: 180px;
-    opacity: 1 !important;
 }
 
 .pluginZoomTo-with-choices {

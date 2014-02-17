@@ -18,6 +18,13 @@
                 $uiContainer = model.get('$uiContainer'),
                 $legendContainer = model.get('$legendContainer');
             
+            if ($uiContainer) {
+                var $inner = $uiContainer.find('.plugin-container-inner');
+                if ($inner.length > 0) {
+                    $uiContainer = $inner;
+                }
+            }
+
             pluginObject.initialize({
                 app: {
                     version: N.app.version,
@@ -28,7 +35,7 @@
                     _unsafeMap: esriMap
                 },
                 map: N.createMapWrapper(esriMap, mapModel, pluginObject),
-                container: ($uiContainer ? $uiContainer.find('.plugin-container-inner')[0] : undefined),
+                container: $uiContainer,
                 legendContainer: ($legendContainer ? $legendContainer[0] : undefined),
                 forceDeactivate: function () {
                     // Drop the turnOff call to the end of the stack because
@@ -328,7 +335,8 @@
 
     (function topbarPluginView() {
 
-        function initialize(view, paneNumber) {
+        function initialize(view, $parent, paneNumber) {
+            view.$el.appendTo($parent);
             if (view.model.get('pluginObject').toolbarType === 'maptop') {
                 view.createUiContainer(paneNumber, 'template-maptop-plugin-container', 155, 20);
             }
@@ -363,7 +371,7 @@
         N.views = N.views || {};
         N.views.TopbarPlugin = N.views.BasePlugin.extend({
             className: 'topbar-plugin',
-            initialize: function () { initialize(this, this.options.paneNumber); },
+            initialize: function () { initialize(this, this.options.$parent, this.options.paneNumber); },
             render: render,
             handleClear: function () {
                 this.model.turnOff();

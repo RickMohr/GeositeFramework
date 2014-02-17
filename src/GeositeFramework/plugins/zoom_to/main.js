@@ -35,11 +35,6 @@ define(
             toolbarName: "Zoom To",
             fullName: "Zoom to a specific address.",
             toolbarType: "maptop",
-
-            _initializeViews: function () {
-                this.input = this.input || new ui.UiInput();
-                this.inputView = this.inputView || new ui.UiInputView({ model: this.input });
-            },
             
             initialize: function (args) {
                 var spatialReference = new esri.SpatialReference({ wkid: 4326 /* lat-lng */ }),
@@ -47,17 +42,18 @@ define(
 
                 declare.safeMixin(this, args);
                 this.config = JSON.parse(configString);
-                if (!this.input) {
-                    this._initializeViews();
-                }
-                this.container.append(this.inputView.render().$el);
+                this.input = new ui.UiInput();
+                this.inputView = new ui.UiInputView({
+                    model: this.input,
+                    el: this.container
+                });
                 this.input.setupLocator(this.config.locatorServiceUrl,
                                         this.app._unsafeMap, this.config.defaultZoomLevel,
                                         point);
             },
 
-            renderLauncher: function renderLauncher() {
-                return $('<div class="full-extent"></div>');
+            renderLauncher: function () {
+                return $('<div class="pluginZoomTo-icon"></div>');
             },
 
             activate: function () {
