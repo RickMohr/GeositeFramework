@@ -190,10 +190,8 @@
                 },
                 $uiContainer = $($.trim(N.app.templates[templateName](bindings)));
 
-            // Position the dialog next to the sidebar button which shows it.
-            $uiContainer.css({left: x, top: y});
-
-            // Attach to top pane element
+            // Position the dialog and attach to top pane element
+            $uiContainer.css({ left: x, top: y });
             view.$el.parents('.content').append($uiContainer.hide());
 
             if (view.className === 'sidebar-plugin') {
@@ -329,7 +327,14 @@
     }());
 
     (function topbarPluginView() {
-        
+
+        function initialize(view, paneNumber) {
+            if (view.model.get('pluginObject').toolbarType === 'maptop') {
+                view.createUiContainer(paneNumber, 'template-maptop-plugin-container', 155, 20);
+            }
+            N.views.BasePlugin.prototype.initialize.call(view);
+        }
+
         function render() {
             // Topbar plugins don't render into any predefined context,
             // simply provide a div, render a template containg an anchor
@@ -358,6 +363,7 @@
         N.views = N.views || {};
         N.views.TopbarPlugin = N.views.BasePlugin.extend({
             className: 'topbar-plugin',
+            initialize: function () { initialize(this, this.options.paneNumber); },
             render: render,
             handleClear: function () {
                 this.model.turnOff();

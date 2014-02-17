@@ -47,16 +47,17 @@ define(
 
                 declare.safeMixin(this, args);
                 this.config = JSON.parse(configString);
-                if (!this.input) this._initializeViews();
+                if (!this.input) {
+                    this._initializeViews();
+                }
+                this.container.append(this.inputView.render().$el);
                 this.input.setupLocator(this.config.locatorServiceUrl,
                                         this.app._unsafeMap, this.config.defaultZoomLevel,
                                         point);
             },
 
             renderLauncher: function renderLauncher() {
-                if (!this.input)
-                    this._initializeViews();
-                return this.inputView.render().$el;
+                return $('<div class="full-extent"></div>');
             },
 
             activate: function () {
